@@ -1,0 +1,18 @@
+{
+  "name": "node-webcache",
+  "version": "0.0.0",
+  "description": "A replacement for geowebcache written in node.",
+  "main": "app.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "express": "~3.4.8",
+    "knox": "~0.8.9"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.1"
+  }
+}
