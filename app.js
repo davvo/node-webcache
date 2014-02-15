@@ -12,24 +12,22 @@ function tryS3(req, res) {
         y = parseInt(req.params.y, 10),
         z = parseInt(req.params.z, 10);
 
-    s3.get(req.path)
-        .on('response', function (response) {
-            if (response.statusCode === 200) {
-                response.pipe(res);
-            } else {
-                if (!drawer[req.path]) {
-                    drawer[req.path] = draw(layer, z, x, y, type);
-                }
-                drawer[req.path].done(function () {
-                    delete drawer[req.path];
-                    tryS3(req, res);
-                }, function (err) {
-                    res.send(500, err);
+    s3.get(req.path).on('response', function (response) {
+        if (response.statusCode === 200) {
+            response.pipe(res);
+        } else {
+            if (!drawer[req.path]) {
+                drawer[req.path] = draw(layer, z, x, y, type).then(function () {
+                    delete(drawer[req.path]);
                 });
             }
-        }).on('error', function (err) {
-            res.send(500, err);
-        }).end();
+            drawer[req.path].done(function () {
+                tryS3(req, res);
+            }, function (err) {
+                res.send(500, err);
+            });
+        }
+    }).end();
 }
 
 app.get('/:layer/:z/:x/:y.:type', tryS3);
