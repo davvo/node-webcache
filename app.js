@@ -1,11 +1,8 @@
 var express = require('express'),
-
     s3 = require('./lib/s3'),
     draw = require('./lib/draw'),
-    config = require('./config.json');
 
     app = express(),
-
     drawer = {};
 
 function tryS3(req, res) {
