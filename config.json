@@ -1,12 +1,9 @@
 {
     "layers": {
         "se_subway": {
-            "format": "image/png",
-            "srs": "epsg:4326",
-            "url": "http://mapfront01:8080/geoserver/wms",
-            "metaTile": {
-                "size": 3
-            }
+            "format": "png",
+            "srs": "EPSG:4326",
+            "url": "http://mapfront01:8080/geoserver/wms"
         }
     }
 }

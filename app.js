@@ -1,29 +1,41 @@
 var express = require('express'),
-    Layer = require('./lib/layer'),
-    MetaTile = require('./lib/metatile'),
+
+    s3 = require('./lib/s3'),
+    draw = require('./lib/draw'),
     config = require('./config.json');
 
-var layers = {};
+    app = express(),
 
-Object.keys(config.layers).forEach(function (name) {
-    layers[name] = new Layer(name, config.layers[name]);
-});
+    drawer = {};
 
-var app = express();
-
-app.get('/:layer/:z/:x/:y.:type', function (req, res) {
-    var x = parseInt(req.params.x, 10),
+function tryS3(req, res) {
+    var layer = req.params.layer,
+        type = req.params.type,
+        x = parseInt(req.params.x, 10),
         y = parseInt(req.params.y, 10),
         z = parseInt(req.params.z, 10);
 
-    var layer = layers[req.params.layer];
+    s3.get(req.path)
+        .on('response', function (response) {
+            if (response.statusCode === 200) {
+                response.pipe(res);
+            } else {
+                if (!drawer[req.path]) {
+                    drawer[req.path] = draw(layer, z, x, y, type);
+                }
+                drawer[req.path].done(function () {
+                    delete drawer[req.path];
+                    tryS3(req, res);
+                }, function (err) {
+                    res.send(500, err);
+                });
+            }
+        }).on('error', function (err) {
+            res.send(500, err);
+        }).end();
+}
 
-    var metaTile = layer.metaTile(x, y, z);
-    var url = layer.buildUrl(metaTile);
-    console.log(url);
-
-    res.send(metaTile.tileLatLonBounds());
-});
+app.get('/:layer/:z/:x/:y.:type', tryS3);
 
 var port = process.env.PORT || 8080;
 app.listen(port);
