@@ -46,6 +46,7 @@ function tryS3(req, res) {
             });
             response.pipe(res);
         } else {
+            console.log(response.statusCode);
             if (!drawing[metaTile]) {
                 drawing[metaTile] = draw(layer, z, x, y, type).then(function () {
                     delete(drawing[metaTile]);
