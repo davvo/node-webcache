@@ -6,6 +6,10 @@ var express = require('express'),
     app = express(),
     drawing = {};
 
+if (process.env.NODE_ENV !== 'production') {
+    require('longjohn');
+}
+
 function getExpires(response, options) {
     var lastModified = new Date(response.headers['last-modified']);
     var maxAge = options.maxAge || 3600;
@@ -53,6 +57,9 @@ function tryS3(req, res) {
                 res.send(500, err);
             });
         }
+    }).on('error', function (err) {
+        console.error("Error in try s3", err);
+        res.send(500, err);
     }).end();
 }
 
