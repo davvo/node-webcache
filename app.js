@@ -30,14 +30,16 @@ function tryS3(req, res) {
         y = parseInt(req.params.y, 10),
         z = parseInt(req.params.z, 10);
 
+    var path = layer + '/' + z + '/' + x + '/' + y + '.' + type;
+
     var options = config.layers[layer];
     if (!options) {
-        return res.send(404, req.path);
+        return res.send(404, path);
     }
 
     var metaTile = getMetaTile(layer, z, x, y, options);
 
-    s3.get(req.path).on('response', function (response) {
+    s3.get(path).on('response', function (response) {
         var now = new Date(),
             expires = getExpires(response, options);
         if (response.statusCode === 200 && (expires > now)) {
@@ -63,7 +65,7 @@ function tryS3(req, res) {
     }).end();
 }
 
-app.get('/:layer/:z/:x/:y.:type', tryS3);
+app.get('/:layer/:version/:z/:x/:y.:type', tryS3);
 
 var port = process.env.PORT || 8080;
 app.listen(port);
