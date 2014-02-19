@@ -67,6 +67,6 @@ function tryS3(req, res) {
 
 app.get('/:layer/:version/:z/:x/:y.:type', tryS3);
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || process.argv[2] || 8080;
 app.listen(port);
 console.log('Server listening on port ' + port);
