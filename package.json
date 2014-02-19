@@ -15,7 +15,8 @@
     "imagemagick": "~0.1.3",
     "async": "~0.2.10",
     "promise": "~4.0.0",
-    "proj4": "~2.1.0"
+    "proj4": "~2.1.0",
+    "pngquant": "~0.1.0"
   },
   "devDependencies": {
     "mocha": "~1.17.1",
